@@ -99,19 +99,19 @@ const App = () => {
 
 const assistantOptions = {
   name: "Julia, your language teacher",
-  firstMessage: "Julia, your language teacher, are you ready to learn some English today??",
+  firstMessage: "Hi, I'm Julia, your language teacher, are you ready to learn some English today??",
   transcriber: {
     provider: "deepgram",
     model: "nova-2",
     language: "en-US",
   },
   voice: {
-    provider: "playht",
-    voiceId: "jennifer",
+    provider: "11labs",
+    voiceId: "matilda",
   },
   model: {
     provider: "openai",
-    model: "gpt-4",
+    model: "gpt-3.5-turbo-0125",
     messages: [
       {
         role: "system",
