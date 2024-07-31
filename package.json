@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && javascript-obfuscator build --output build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -38,6 +38,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "javascript-obfuscator": "^4.1.1"
   }
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import ActiveCallDetail from "./components/ActiveCallDetail";
 import Button from "./components/base/Button";
 import Vapi from "@vapi-ai/web";
@@ -11,25 +10,32 @@ const vapi = new Vapi("1d2b5be0-8598-4d46-b95f-e738be2a8742");
 const App = () => {
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
-
   const [assistantIsSpeaking, setAssistantIsSpeaking] = useState(false);
   const [volumeLevel, setVolumeLevel] = useState(0);
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
 
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
-  // hook into Vapi events
   useEffect(() => {
+    // Parse URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const idFromUrl = urlParams.get('id');
+    const nameFromUrl = urlParams.get('name');
+
+    if (idFromUrl) setUserId(idFromUrl);
+    if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
+
+    // Vapi event listeners
     vapi.on("call-start", () => {
       setConnecting(false);
       setConnected(true);
-
       setShowPublicKeyInvalidMessage(false);
     });
 
     vapi.on("call-end", () => {
       setConnecting(false);
       setConnected(false);
-
       setShowPublicKeyInvalidMessage(false);
     });
 
@@ -47,42 +53,90 @@ const App = () => {
 
     vapi.on("error", (error) => {
       console.error(error);
-
       setConnecting(false);
       if (isPublicKeyMissingError({ vapiError: error })) {
         setShowPublicKeyInvalidMessage(true);
       }
     });
 
-    // we only want this to fire on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    vapi.on("message", (message) => {
+      console.log("Received message:", message);
+    });
   }, []);
 
-  // call start handler
   const startCallInline = () => {
+    if (!userId || !userName) {
+      alert("User ID and Name are required. Please check the URL parameters.");
+      return;
+    }
     setConnecting(true);
-    vapi.start(assistantOptions);
+
+    const assistantConfig = {
+      name: "Julia, your language teacher",
+      firstMessage: `Hi ${userName}, I'm Julia, your language teacher. Are you ready to learn some English today?`,
+      transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: "en-US",
+      },
+      voice: {
+        provider: "azure",
+        voiceId: "emma",
+      },
+      model: {
+        provider: "openai",
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `You're Julia - a spoken English teacher and improver. 
+            The user's name is ${userName} and their ID is ${userId}.
+            User will speak to you in English and you will reply to them in English to practice their spoken English. 
+            Keep your reply neat, limiting the reply to 100 words. 
+            Strictly correct their grammar mistakes, typos, and factual errors. 
+            Ask them a question in your reply. You can explain some language-related topics in detail. 
+            Now let's start practicing, you could ask them a question first. 
+            Remember to strictly correct their grammar mistakes, typos, and factual errors.`,
+          },
+        ],
+      },
+    };
+
+    vapi.start(assistantConfig);
+
+    // Send additional system message with user info
+    vapi.send({
+      type: 'add-message',
+      message: {
+        role: 'system',
+        content: `User ${userName} (ID: ${userId}) has joined the call.`,
+      },
+    });
   };
+
   const endCall = () => {
     vapi.stop();
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100vw",
-        height: "100vh",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      width: "100vw",
+      height: "100vh",
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
       {!connected ? (
-        <Button
-          label="Julia, your language teacher"
-          onClick={startCallInline}
-          isLoading={connecting}
-        />
+        <>
+          <div>User ID: {userId}</div>
+          <div>User Name: {userName}</div>
+          <Button
+            label="Start Call"
+            onClick={startCallInline}
+            isLoading={connecting}
+          />
+        </>
       ) : (
         <ActiveCallDetail
           assistantIsSpeaking={assistantIsSpeaking}
@@ -97,35 +151,6 @@ const App = () => {
   );
 };
 
-const assistantOptions = {
-  name: "Julia, your language teacher",
-  firstMessage: "Hi, I'm Julia, your language teacher, are you ready to learn some English today??",
-  transcriber: {
-    provider: "deepgram",
-    model: "nova-2",
-    language: "en-US",
-  },
-  voice: {
-    provider: "11labs",
-    voiceId: "matilda",
-  },
-  model: {
-    provider: "openai",
-    model: "gpt-3.5-turbo-0125",
-    messages: [
-      {
-        role: "system",
-        content: `You're Julia - a spoken English teacher and improver. 
-        User will speak to you in English and you will reply to me in English to practice my spoken English. 
-        I want you to keep your reply neat, limiting the reply to 100 words. 
-        I want you to strictly correct my grammar mistakes, typos, and factual errors. 
-        I want you to ask me a question in your reply. You can explain some language-related topics in detail. 
-        Now let's start practicing, you could ask me a question first. 
-        Remember, I want you to strictly correct my grammar mistakes, typos, and factual errors.`,
-      },
-    ],
-  },
-};
 
 const usePublicKeyInvalid = () => {
   const [showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage] = useState(false);
@@ -159,7 +184,7 @@ const PleaseSetYourPublicKeyMessage = () => {
         boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
       }}
     >
-      Is your Vapi Public Key missing? (recheck your code)
+      Is your Public Key missing? (recheck your code)
     </div>
   );
 };
@@ -167,7 +192,7 @@ const PleaseSetYourPublicKeyMessage = () => {
 const ReturnToDocsLink = () => {
   return (
     <a
-      href="https://docs.vapi.ai"
+      href="https://callr.ai"
       target="_blank"
       rel="noopener noreferrer"
       style={{
