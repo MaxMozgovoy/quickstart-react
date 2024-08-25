@@ -22,17 +22,22 @@ const Button = ({ label, onClick, isLoading, disabled }) => {
     <button
       onClick={onClick}
       style={{
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: "blue",  // Change background color to light blue
+        color: "white",
         border: "2px solid #ddd",
-        borderRadius: "8px",
-        padding: "8px 20px",
+        borderRadius: "50%",  // Make the button round
+        padding: "10px 20px",  // Adjust padding to create a round shape
         fontSize: "16px",
         outline: "none",
         boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
         transition: "all 0.3s ease",
         opacity,
         cursor,
+        width: "100px",  // Set width for the round button
+        height: "100px", // Set height for the round button
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
       }}
     >
       {Contents}

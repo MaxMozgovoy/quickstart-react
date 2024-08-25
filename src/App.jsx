@@ -14,6 +14,7 @@ const App = () => {
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
+  const [projectId, setUserProject] = useState("");
 
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
@@ -22,9 +23,12 @@ const App = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const idFromUrl = urlParams.get('id');
     const nameFromUrl = urlParams.get('name');
+    const projectFromUrl = urlParams.get('project');
+
 
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
+    if (projectFromUrl) setUserProject(decodeURIComponent(projectFromUrl));
 
     // Vapi event listeners
     vapi.on("call-start", () => {
@@ -65,14 +69,18 @@ const App = () => {
   }, []);
 
   const startCallInline = () => {
-    if (!userId || !userName) {
-      alert("User ID and Name are required. Please check the URL parameters.");
+    if (!userId || !userName || !projectId) {
+      alert("User ID, Name and Project are required. Please check the URL parameters.");
       return;
     }
     setConnecting(true);
 
     const assistantConfig = {
       name: "Julia, your language teacher",
+      metadata: {
+        customerId: userId,
+        projectId: projectId,
+      },
       firstMessage: `Hi ${userName}, I'm Julia, your language teacher. Are you ready to learn some English today?`,
       transcriber: {
         provider: "deepgram",
@@ -101,6 +109,13 @@ const App = () => {
         ],
       },
     };
+
+  /*  const assistantOverrides = {
+      metadata: {
+        customer: "112345"
+      }
+    }; */
+
 
     vapi.start(assistantConfig);
 
@@ -131,6 +146,7 @@ const App = () => {
         <>
           <div>User ID: {userId}</div>
           <div>User Name: {userName}</div>
+          <div>User Project: {projectId}</div>
           <Button
             label="Start Call"
             onClick={startCallInline}
