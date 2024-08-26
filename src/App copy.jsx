@@ -25,6 +25,7 @@ const App = () => {
     const nameFromUrl = urlParams.get('name');
     const projectFromUrl = urlParams.get('project');
 
+
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
     if (projectFromUrl) setUserProject(decodeURIComponent(projectFromUrl));
@@ -74,10 +75,49 @@ const App = () => {
     }
     setConnecting(true);
 
-    // Use the specific agent ID instead of configuring a new assistant
-    const agentId = "d805940f-eecd-410c-8beb-5266c21a89b7";
+    const assistantConfig = {
+      name: "Julia, your language teacher",
+      metadata: {
+        customerId: userId,
+        projectId: projectId,
+      },
+      firstMessage: `Hi ${userName}, I'm Julia, your language teacher. Are you ready to learn some English today?`,
+      transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: "en-US",
+      },
+      voice: {
+        provider: "azure",
+        voiceId: "emma",
+      },
+      model: {
+        provider: "openai",
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `You're Julia - a spoken English teacher and improver. 
+            The user's name is ${userName} and their ID is ${userId}.
+            User will speak to you in English and you will reply to them in English to practice their spoken English. 
+            Keep your reply neat, limiting the reply to 100 words. 
+            Strictly correct their grammar mistakes, typos, and factual errors. 
+            Ask them a question in your reply. You can explain some language-related topics in detail. 
+            Now let's start practicing, you could ask them a question first. 
+            Remember to strictly correct their grammar mistakes, typos, and factual errors.`,
+          },
+        ],
+      },
+    };
 
-    vapi.start("d805940f-eecd-410c-8beb-5266c21a89b7");
+  /*  const assistantOverrides = {
+      metadata: {
+        customer: "112345"
+      }
+    }; */
+
+
+    vapi.start(assistantConfig);
 
     // Send additional system message with user info
     vapi.send({
