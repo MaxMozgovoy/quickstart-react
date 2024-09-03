@@ -75,9 +75,9 @@ const App = () => {
     setConnecting(true);
 
     // Use the specific agent ID instead of configuring a new assistant
-    const agentId = "813d4ddf-6f8c-4295-88a5-160b1b1548f6";
+    const agentId = "2b9ca1c2-5be2-4de6-8e24-358337575a3c";
 
-    vapi.start("813d4ddf-6f8c-4295-88a5-160b1b1548f6");
+    vapi.start("2b9ca1c2-5be2-4de6-8e24-358337575a3c");
 
     // Send additional system message with user info
     vapi.send({
