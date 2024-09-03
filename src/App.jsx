@@ -168,7 +168,7 @@ const PleaseSetYourPublicKeyMessage = () => {
 const ReturnToDocsLink = () => {
   return (
     <a
-      href="https://callr.ai"
+      /*href="https://callr.ai"*/
       target="_blank"
       rel="noopener noreferrer"
       style={{
@@ -182,7 +182,7 @@ const ReturnToDocsLink = () => {
         boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
       }}
     >
-      return to docs
+      Please push the button to talk.
     </a>
   );
 };
