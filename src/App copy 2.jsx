@@ -14,9 +14,8 @@ const App = () => {
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [assistantId, setAssistantId] = useState("");
-  const [imgUrl, setImgUrl] = useState(""); // New state for image URL
+  const [projectId, setUserProject] = useState("");
+
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   useEffect(() => {
@@ -25,14 +24,10 @@ const App = () => {
     const idFromUrl = urlParams.get('id');
     const nameFromUrl = urlParams.get('name');
     const projectFromUrl = urlParams.get('project');
-    const assistantFromUrl = urlParams.get('assistant_id');
-    const imgFromUrl = urlParams.get('img_url'); // Get image URL from parameters
 
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
-    if (projectFromUrl) setProjectId(decodeURIComponent(projectFromUrl));
-    if (assistantFromUrl) setAssistantId(assistantFromUrl);
-    if (imgFromUrl) setImgUrl(decodeURIComponent(imgFromUrl)); // Set image URL state
+    if (projectFromUrl) setUserProject(decodeURIComponent(projectFromUrl));
 
     // Vapi event listeners
     vapi.on("call-start", () => {
@@ -73,23 +68,25 @@ const App = () => {
   }, []);
 
   const startCallInline = () => {
-    if (!userId || !userName || !projectId || !assistantId) {
-      alert("User ID, Name, Project, and Assistant ID are required. Please check the URL parameters.");
+    if (!userId || !userName || !projectId) {
+      alert("User ID, Name and Project are required. Please check the URL parameters.");
       return;
     }
     setConnecting(true);
 
-    // Create assistantOverrides with metadata
-    const assistantOverrides = {
-      metadata: {
-        user_id: userId,
-        user_name: userName,
-        project_id: projectId,
-      },
-    };
+    // Use the specific agent ID instead of configuring a new assistant
+    const agentId = "2b9ca1c2-5be2-4de6-8e24-358337575a3c";
 
-    // Use the assistant ID from the URL parameter and pass assistantOverrides
-    vapi.start(assistantId, assistantOverrides);
+    vapi.start("2b9ca1c2-5be2-4de6-8e24-358337575a3c");
+
+    // Send additional system message with user info
+    vapi.send({
+      type: 'add-message',
+      message: {
+        role: 'system',
+        content: `User ${userName} (ID: ${userId}) has joined the call.`,
+      },
+    });
   };
 
   const endCall = () => {
@@ -110,12 +107,10 @@ const App = () => {
           <div>User ID: {userId}</div>
           <div>User Name: {userName}</div>
           <div>User Project: {projectId}</div>
-          <div>Assistant ID: {assistantId}</div>
           <Button
             label="Start Call"
             onClick={startCallInline}
             isLoading={connecting}
-            imgUrl={imgUrl} // Pass image URL to button
           />
         </>
       ) : (
@@ -123,7 +118,6 @@ const App = () => {
           assistantIsSpeaking={assistantIsSpeaking}
           volumeLevel={volumeLevel}
           onEndCallClick={endCall}
-          imgUrl={imgUrl} // Pass image URL to ActiveCallDetail
         />
       )}
 
@@ -133,11 +127,11 @@ const App = () => {
   );
 };
 
-// Define the usePublicKeyInvalid hook
+
 const usePublicKeyInvalid = () => {
   const [showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage] = useState(false);
 
-  // Close public key invalid message after a delay
+  // close public key invalid message after delay
   useEffect(() => {
     if (showPublicKeyInvalidMessage) {
       setTimeout(() => {
@@ -152,7 +146,6 @@ const usePublicKeyInvalid = () => {
   };
 };
 
-// Define the PleaseSetYourPublicKeyMessage component
 const PleaseSetYourPublicKeyMessage = () => {
   return (
     <div
@@ -172,7 +165,6 @@ const PleaseSetYourPublicKeyMessage = () => {
   );
 };
 
-// Define the ReturnToDocsLink component
 const ReturnToDocsLink = () => {
   return (
     <a
