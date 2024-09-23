@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ActiveCallDetail from "./components/ActiveCallDetail";
 import Button from "./components/base/Button";
 import Vapi from "@vapi-ai/web";
@@ -15,9 +15,30 @@ const App = () => {
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
   const [projectId, setProjectId] = useState("");
+  const [phaseId, setPhaseId] = useState("");
   const [assistantId, setAssistantId] = useState("");
-  const [imgUrl, setImgUrl] = useState(""); // New state for image URL
+  const [imgUrl, setImgUrl] = useState("");
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
+
+  const sendPhaseIdPrompt = useCallback(() => {
+    if (phaseId) {
+      console.log(`Sending phase ID prompt: ${phaseId}`);
+      try {
+        vapi.send({
+          type: 'add-message',
+          message: {
+            role: 'system',
+            content: `Current Conversation Phase is: ${phaseId}. Use this conversation phase ${phaseId} to ask the right questions.`,
+          },
+        });
+        console.log('Phase ID prompt sent successfully');
+      } catch (error) {
+        console.error('Error sending phase ID prompt:', error);
+      }
+    } else {
+      console.warn('Phase ID is not set, skipping prompt');
+    }
+  }, [phaseId]);
 
   useEffect(() => {
     // Parse URL parameters
@@ -26,22 +47,34 @@ const App = () => {
     const nameFromUrl = urlParams.get('name');
     const projectFromUrl = urlParams.get('project');
     const assistantFromUrl = urlParams.get('assistant_id');
-    const imgFromUrl = urlParams.get('img_url'); // Get image URL from parameters
+    const phaseFromUrl = urlParams.get('phase_id');
+    const imgFromUrl = urlParams.get('img_url');
 
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
     if (projectFromUrl) setProjectId(decodeURIComponent(projectFromUrl));
     if (assistantFromUrl) setAssistantId(assistantFromUrl);
-    if (imgFromUrl) setImgUrl(decodeURIComponent(imgFromUrl)); // Set image URL state
+    if (phaseFromUrl) {
+      setPhaseId(phaseFromUrl);
+      console.log(`Phase ID set from URL: ${phaseFromUrl}`);
+    }
+    if (imgFromUrl) setImgUrl(decodeURIComponent(imgFromUrl));
 
     // Vapi event listeners
     vapi.on("call-start", () => {
+      console.log('Call started');
       setConnecting(false);
       setConnected(true);
       setShowPublicKeyInvalidMessage(false);
+
+      // Send the system prompt with phase_id after the call has started
+      setTimeout(() => {
+        sendPhaseIdPrompt();
+      }, 1000); // Delay the sendPhaseIdPrompt call by 1 second
     });
 
     vapi.on("call-end", () => {
+      console.log('Call ended');
       setConnecting(false);
       setConnected(false);
       setShowPublicKeyInvalidMessage(false);
@@ -60,7 +93,7 @@ const App = () => {
     });
 
     vapi.on("error", (error) => {
-      console.error(error);
+      console.error("Vapi error:", error);
       setConnecting(false);
       if (isPublicKeyMissingError({ vapiError: error })) {
         setShowPublicKeyInvalidMessage(true);
@@ -70,7 +103,7 @@ const App = () => {
     vapi.on("message", (message) => {
       console.log("Received message:", message);
     });
-  }, []);
+  }, [sendPhaseIdPrompt]);
 
   const startCallInline = () => {
     if (!userId || !userName || !projectId || !assistantId) {
@@ -79,16 +112,16 @@ const App = () => {
     }
     setConnecting(true);
 
-    // Create assistantOverrides with metadata
     const assistantOverrides = {
       metadata: {
         user_id: userId,
         user_name: userName,
         project_id: projectId,
+        phase_id: phaseId,
       },
     };
 
-    // Use the assistant ID from the URL parameter and pass assistantOverrides
+    console.log('Starting call with overrides:', assistantOverrides);
     vapi.start(assistantId, assistantOverrides);
   };
 
@@ -111,11 +144,12 @@ const App = () => {
           <div>User Name: {userName}</div>
           <div>User Project: {projectId}</div>
           <div>Assistant ID: {assistantId}</div>
+          <div>Phase ID: {phaseId}</div>
           <Button
             label="Start Call"
             onClick={startCallInline}
             isLoading={connecting}
-            imgUrl={imgUrl} // Pass image URL to button
+            imgUrl={imgUrl}
           />
         </>
       ) : (
@@ -123,7 +157,7 @@ const App = () => {
           assistantIsSpeaking={assistantIsSpeaking}
           volumeLevel={volumeLevel}
           onEndCallClick={endCall}
-          imgUrl={imgUrl} // Pass image URL to ActiveCallDetail
+          imgUrl={imgUrl}
         />
       )}
 

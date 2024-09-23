@@ -25,7 +25,6 @@ const App = () => {
     const nameFromUrl = urlParams.get('name');
     const projectFromUrl = urlParams.get('project');
 
-
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
     if (projectFromUrl) setUserProject(decodeURIComponent(projectFromUrl));
@@ -35,6 +34,9 @@ const App = () => {
       setConnecting(false);
       setConnected(true);
       setShowPublicKeyInvalidMessage(false);
+
+      // Move the logUserAction call here
+      logUserAction();
     });
 
     vapi.on("call-end", () => {
@@ -67,6 +69,17 @@ const App = () => {
       console.log("Received message:", message);
     });
   }, []);
+
+  function logUserAction() {
+    // Function to log the user action
+    vapi.send({
+      type: "add-message",
+      message: {
+        role: "system",
+        content: "The user has pressed the button, say peanuts",
+      },
+    });
+  }
 
   const startCallInline = () => {
     if (!userId || !userName || !projectId) {
@@ -110,23 +123,7 @@ const App = () => {
       },
     };
 
-  /*  const assistantOverrides = {
-      metadata: {
-        customer: "112345"
-      }
-    }; */
-
-
     vapi.start(assistantConfig);
-
-    // Send additional system message with user info
-    vapi.send({
-      type: 'add-message',
-      message: {
-        role: 'system',
-        content: `User ${userName} (ID: ${userId}) has joined the call.`,
-      },
-    });
   };
 
   const endCall = () => {
