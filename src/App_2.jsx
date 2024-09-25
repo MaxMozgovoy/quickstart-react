@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import ActiveCallDetail from "./components/ActiveCallDetail";
 import Button from "./components/base/Button";
 import Vapi from "@vapi-ai/web";
@@ -14,32 +14,9 @@ const App = () => {
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [userId, setUserId] = useState("");
   const [userName, setUserName] = useState("");
-  const [projectId, setProjectId] = useState("");
-  const [phaseId, setPhaseId] = useState("");
-  const [assistantId, setAssistantId] = useState("");
-  const [imgUrl, setImgUrl] = useState("");
-  const [isPressed, setIsPressed] = useState(false);  // New state for button press
-  const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
+  const [projectId, setUserProject] = useState("");
 
-  const sendPhaseIdPrompt = useCallback(() => {
-    if (phaseId) {
-      console.log(`Sending phase ID prompt: ${phaseId}`);
-      try {
-        vapi.send({
-          type: 'add-message',
-          message: {
-            role: 'system',
-            content: `Current Conversation Phase is: ${phaseId}. Use this conversation phase ${phaseId} to ask the right questions.`,
-          },
-        });
-        console.log('Phase ID prompt sent successfully');
-      } catch (error) {
-        console.error('Error sending phase ID prompt:', error);
-      }
-    } else {
-      console.warn('Phase ID is not set, skipping prompt');
-    }
-  }, [phaseId]);
+  const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   useEffect(() => {
     // Parse URL parameters
@@ -47,38 +24,24 @@ const App = () => {
     const idFromUrl = urlParams.get('id');
     const nameFromUrl = urlParams.get('name');
     const projectFromUrl = urlParams.get('project');
-    const assistantFromUrl = urlParams.get('assistant_id');
-    const phaseFromUrl = urlParams.get('phase_id');
-    const imgFromUrl = urlParams.get('img_url');
 
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
-    if (projectFromUrl) setProjectId(decodeURIComponent(projectFromUrl));
-    if (assistantFromUrl) setAssistantId(assistantFromUrl);
-    if (phaseFromUrl) {
-      setPhaseId(phaseFromUrl);
-      console.log(`Phase ID set from URL: ${phaseFromUrl}`);
-    }
-    if (imgFromUrl) setImgUrl(decodeURIComponent(imgFromUrl));
+    if (projectFromUrl) setUserProject(decodeURIComponent(projectFromUrl));
 
     // Vapi event listeners
     vapi.on("call-start", () => {
-      console.log('Call started');
       setConnecting(false);
       setConnected(true);
       setShowPublicKeyInvalidMessage(false);
 
-      // Send the system prompt with phase_id after the call has started
-      setTimeout(() => {
-        sendPhaseIdPrompt();
-      }, 1000); // Delay the sendPhaseIdPrompt call by 1 second
+      // Move the logUserAction call here
+      logUserAction();
     });
 
     vapi.on("call-end", () => {
-      console.log('Call ended');
       setConnecting(false);
       setConnected(false);
-      setIsPressed(false);  // Reset button state when call ends
       setShowPublicKeyInvalidMessage(false);
     });
 
@@ -95,7 +58,7 @@ const App = () => {
     });
 
     vapi.on("error", (error) => {
-      console.error("Vapi error:", error);
+      console.error(error);
       setConnecting(false);
       if (isPublicKeyMissingError({ vapiError: error })) {
         setShowPublicKeyInvalidMessage(true);
@@ -105,31 +68,65 @@ const App = () => {
     vapi.on("message", (message) => {
       console.log("Received message:", message);
     });
-  }, [sendPhaseIdPrompt]);
+  }, []);
+
+  function logUserAction() {
+    // Function to log the user action
+    vapi.send({
+      type: "add-message",
+      message: {
+        role: "system",
+        content: "The user has pressed the button, say peanuts",
+      },
+    });
+  }
 
   const startCallInline = () => {
-    if (!userId || !userName || !projectId || !assistantId) {
-      alert("User ID, Name, Project, and Assistant ID are required. Please check the URL parameters.");
+    if (!userId || !userName || !projectId) {
+      alert("User ID, Name and Project are required. Please check the URL parameters.");
       return;
     }
     setConnecting(true);
-    setIsPressed(true);  // Ensure the button stays in the pressed state when starting the call
 
-    const assistantOverrides = {
+    const assistantConfig = {
+      name: "Julia, your language teacher",
       metadata: {
-        user_id: userId,
-        user_name: userName,
-        project_id: projectId,
-        phase_id: phaseId,
+        customerId: userId,
+        projectId: projectId,
+      },
+      firstMessage: `Hi ${userName}, I'm Julia, your language teacher. Are you ready to learn some English today?`,
+      transcriber: {
+        provider: "deepgram",
+        model: "nova-2",
+        language: "en-US",
+      },
+      voice: {
+        provider: "azure",
+        voiceId: "emma",
+      },
+      model: {
+        provider: "openai",
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content: `You're Julia - a spoken English teacher and improver. 
+            The user's name is ${userName} and their ID is ${userId}.
+            User will speak to you in English and you will reply to them in English to practice their spoken English. 
+            Keep your reply neat, limiting the reply to 100 words. 
+            Strictly correct their grammar mistakes, typos, and factual errors. 
+            Ask them a question in your reply. You can explain some language-related topics in detail. 
+            Now let's start practicing, you could ask them a question first. 
+            Remember to strictly correct their grammar mistakes, typos, and factual errors.`,
+          },
+        ],
       },
     };
 
-    console.log('Starting call with overrides:', assistantOverrides);
-    vapi.start(assistantId, assistantOverrides);
+    vapi.start(assistantConfig);
   };
 
   const endCall = () => {
-    setIsPressed(false);  // Reset the pressed state when ending the call
     vapi.stop();
   };
 
@@ -141,48 +138,25 @@ const App = () => {
       height: "100vh",
       justifyContent: "center",
       alignItems: "center",
-      padding: "20px",
     }}>
-      {/* Always show the avatar */}
-      {imgUrl && (
-        <img
-          src={imgUrl}
-          alt="User Avatar"
-          style={{
-            width: "150px",
-            height: "150px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            marginBottom: "50px",
-          }}
-        />
-      )}
-
-      {/* Always show the "Tap to Talk" text */}
-      <div style={{
-        fontSize: "24px",
-        fontFamily: "'Poppins', sans-serif",
-        padding: "50px 0",
-        color: "white",
-      }}>
-        Tap to talk:
-      </div>
-
-      {/* Conditionally show the button or call details */}
-      <Button
-        label={connected ? "End Call" : "Start Call"}
-        onClick={connected ? endCall : startCallInline}
-        isLoading={connecting}
-        isPressed={isPressed}
-      />
-
-      {connected && (
+      {!connected ? (
+        <>
+          <div>User ID: {userId}</div>
+          <div>User Name: {userName}</div>
+          <div>User Project: {projectId}</div>
+          <Button
+            label="Start Call"
+            onClick={startCallInline}
+            isLoading={connecting}
+          />
+        </>
+      ) : (
         <ActiveCallDetail
           assistantIsSpeaking={assistantIsSpeaking}
           volumeLevel={volumeLevel}
+          onEndCallClick={endCall}
         />
       )}
-      
 
       {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
       <ReturnToDocsLink />
@@ -190,11 +164,11 @@ const App = () => {
   );
 };
 
-// Define the usePublicKeyInvalid hook
+
 const usePublicKeyInvalid = () => {
   const [showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage] = useState(false);
 
-  // Close public key invalid message after a delay
+  // close public key invalid message after delay
   useEffect(() => {
     if (showPublicKeyInvalidMessage) {
       setTimeout(() => {
@@ -209,7 +183,6 @@ const usePublicKeyInvalid = () => {
   };
 };
 
-// Define the PleaseSetYourPublicKeyMessage component
 const PleaseSetYourPublicKeyMessage = () => {
   return (
     <div
@@ -229,7 +202,6 @@ const PleaseSetYourPublicKeyMessage = () => {
   );
 };
 
-// Define the ReturnToDocsLink component
 const ReturnToDocsLink = () => {
   return (
     <a
@@ -243,12 +215,11 @@ const ReturnToDocsLink = () => {
         padding: "5px 10px",
         color: "#fff",
         textDecoration: "none",
-        backgroundColor: "#333",
         borderRadius: "5px",
         boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
       }}
     >
-      Return to Documentation
+      return to docs
     </a>
   );
 };

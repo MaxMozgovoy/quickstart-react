@@ -1,26 +1,35 @@
-import AssistantSpeechIndicator from "./call/AssistantSpeechIndicator";
-import Button from "./base/Button";
-import VolumeLevel from "./call/VolumeLevel";
-
-const ActiveCallDetail = ({ assistantIsSpeaking, volumeLevel, onEndCallClick, imgUrl }) => {
+const ActiveCallDetail = ({ assistantIsSpeaking, volumeLevel }) => {
   return (
-    <div>
-      {/* Optional: add additional content here, such as indicators for speech or volume */}
-      {/* 
-      <AssistantSpeechIndicator isSpeaking={assistantIsSpeaking} />
-      <VolumeLevel volume={volumeLevel} />
-      */}
-
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        <Button 
-          label="End Call" 
-          onClick={onEndCallClick} 
-          imgUrl={imgUrl} // Pass the imgUrl to Button component
-        />
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      marginTop: "20px",
+    }}>
+      <div style={{
+        fontSize: "12px",
+        color: "white",
+        fontFamily: "'Poppins', sans-serif",
+        marginBottom: "10px",
+      }}>
+        {assistantIsSpeaking ? "Assistant is speaking" : "Assistant is listening"}
+      </div>
+      <div style={{
+        width: "100px",
+        height: "8px",
+        backgroundColor: "#ddd",
+        borderRadius: "5px",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          width: `${volumeLevel * 100}%`,
+          height: "100%",
+          backgroundColor: "#4CAF50",
+          transition: "width 0.1s ease-in-out",
+        }}></div>
       </div>
     </div>
   );
 };
 
 export default ActiveCallDetail;
-
