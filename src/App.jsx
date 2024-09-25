@@ -161,6 +161,7 @@ const App = () => {
       {/* Always show the "Tap to Talk" text */}
       <div style={{
         fontSize: "24px",
+        fontWeight: "bold",
         fontFamily: "'Poppins', sans-serif",
         padding: "50px 0",
         color: "white",
