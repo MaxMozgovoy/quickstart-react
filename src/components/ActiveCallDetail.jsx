@@ -1,10 +1,13 @@
-const ActiveCallDetail = ({ assistantIsSpeaking, volumeLevel }) => {
+const ActiveCallDetail = ({ assistantIsSpeaking, volumeLevel, connected }) => {
   return (
     <div style={{
-      display: "flex",
+      display: connected ? "flex" : "none",  // Show only when connected
       flexDirection: "column",
       alignItems: "center",
-      marginTop: "20px",
+      justifyContent: "center",  // Center align vertically
+      marginTop: "10px",
+      height: "60px",  // Set a fixed height
+      visibility: connected ? "visible" : "hidden",  // Toggle visibility
     }}>
       <div style={{
         fontSize: "12px",

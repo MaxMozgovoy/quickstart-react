@@ -135,16 +135,27 @@ const App = () => {
 
   return (
     <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "100vw",
+        height: "100vh",
+        background: "rgba(0, 0, 0, 0.8)", // Semi-transparent background
+    }}>
+    <div style={{
       display: "flex",
       flexDirection: "column",
       width: "300px",
-      height: "400px",
+      height: "500px",
       justifyContent: "space-between",
       alignItems: "center",
       padding: "15px",
       boxSizing: "border-box",
       overflow: "hidden",
       position: "relative",
+      background: "#000", // Black background for the app container
+        borderRadius: "10px", // Rounded corners
+        boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effec
     }}>
       {/* Always show the avatar */}
       {imgUrl && (
@@ -156,7 +167,8 @@ const App = () => {
             height: "150px",
             borderRadius: "50%",
             objectFit: "cover",
-            marginBottom: "20px",
+            marginBottom: "40px",
+            position: "relative",
           }}
         />
       )}
@@ -167,7 +179,7 @@ const App = () => {
         fontWeight: "bold",
         fontFamily: "'Poppins', sans-serif",
         color: "white",
-        marginTop: "10px",
+        marginBottom: "10px",
         textAlign: "center",
       }}>
         Tap to talk:
@@ -181,16 +193,18 @@ const App = () => {
         isPressed={isPressed}
       />
 
-      {connected && (
+        <div style={{ height: "60px", width: "100%" }}>
         <ActiveCallDetail
-          assistantIsSpeaking={assistantIsSpeaking}
-          volumeLevel={volumeLevel}
+         assistantIsSpeaking={assistantIsSpeaking}
+         volumeLevel={volumeLevel}
+         connected={connected}
         />
-      )}
+        </div>
       
 
       {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
       <ReturnToDocsLink />
+    </div>
     </div>
   );
 };
