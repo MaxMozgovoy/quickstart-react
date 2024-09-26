@@ -137,11 +137,14 @@ const App = () => {
     <div style={{
       display: "flex",
       flexDirection: "column",
-      width: "100vw",
-      height: "100vh",
-      justifyContent: "center",
+      width: "300px",
+      height: "400px",
+      justifyContent: "space-between",
       alignItems: "center",
-      padding: "20px",
+      padding: "15px",
+      boxSizing: "border-box",
+      overflow: "hidden",
+      position: "relative",
     }}>
       {/* Always show the avatar */}
       {imgUrl && (
@@ -153,7 +156,7 @@ const App = () => {
             height: "150px",
             borderRadius: "50%",
             objectFit: "cover",
-            marginBottom: "50px",
+            marginBottom: "20px",
           }}
         />
       )}
@@ -163,8 +166,9 @@ const App = () => {
         fontSize: "24px",
         fontWeight: "bold",
         fontFamily: "'Poppins', sans-serif",
-        padding: "50px 0",
         color: "white",
+        marginTop: "10px",
+        textAlign: "center",
       }}>
         Tap to talk:
       </div>
