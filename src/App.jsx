@@ -146,7 +146,7 @@ const App = () => {
   display: "flex",
   flexDirection: "column",
   width: "300px",
-  height: "500px",
+  height: "600px",
   justifyContent: "space-between",
   alignItems: "center",
   padding: "15px",
@@ -161,8 +161,8 @@ const App = () => {
   {/* Container for GIF and avatar */}
   <div style={{
     position: "relative",
-    width: "200px",
-    height: "200px",
+    width: "300px",
+    height: "300px",
     marginBottom: "20px",
   }}>
     {/* Animated GIF behind the avatar */}
@@ -175,8 +175,8 @@ const App = () => {
         left: "0",
         //width: "100%",
         //height: "100%",
-        width: "200px",
-        height: "200px",
+        width: "300px",
+        height: "300px",
         objectFit: "cover", // Ensure the gif covers the container
         zIndex: "1", // Behind the avatar
       }}
@@ -191,8 +191,8 @@ const App = () => {
             position: "absolute",
             top: "50%",
             left: "50%",
-            width: "100px",  // Adjust the avatar size here
-            height: "100px", // Ensure it maintains a square shape
+            width: "150px",  // Adjust the avatar size here
+            height: "150px", // Ensure it maintains a square shape
             borderRadius: "50%",
             objectFit: "cover",
             transform: "translate(-50%, -60%)",  // Center the avatar in the container
