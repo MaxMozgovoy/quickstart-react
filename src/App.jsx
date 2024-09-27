@@ -143,68 +143,97 @@ const App = () => {
         background: "rgba(0, 0, 0, 0.8)", // Semi-transparent background
     }}>
     <div style={{
-      display: "flex",
-      flexDirection: "column",
-      width: "300px",
-      height: "500px",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "15px",
-      boxSizing: "border-box",
-      overflow: "hidden",
-      position: "relative",
-      background: "#000", // Black background for the app container
-        borderRadius: "10px", // Rounded corners
-        boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effec
-    }}>
-      {/* Always show the avatar */}
-      {imgUrl && (
-        <img
-          src={imgUrl}
-          alt="User Avatar"
-          style={{
-            width: "150px",
-            height: "150px",
+  display: "flex",
+  flexDirection: "column",
+  width: "300px",
+  height: "500px",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "15px",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  position: "relative",
+  background: "#000", // Black background for the app container
+  borderRadius: "10px", // Rounded corners
+  boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effect
+}}>
+
+  {/* Container for GIF and avatar */}
+  <div style={{
+    position: "relative",
+    width: "200px",
+    height: "200px",
+    marginBottom: "20px",
+  }}>
+    {/* Animated GIF behind the avatar */}
+    <img
+      src="https://ufnmrdffbnmwfyisnkfu.supabase.co/storage/v1/object/public/photo/files/Brayn/Flow%201@1x-50fps.gif"
+      alt="Animated Background"
+      style={{
+        position: "absolute",
+        top: "0",
+        left: "0",
+        //width: "100%",
+        //height: "100%",
+        width: "200px",
+        height: "200px",
+        objectFit: "cover", // Ensure the gif covers the container
+        zIndex: "1", // Behind the avatar
+      }}
+    />
+
+    {/* Avatar image on top */}
+    {imgUrl && (
+      <img
+        src={imgUrl}
+        alt="User Avatar"
+        style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: "100px",  // Adjust the avatar size here
+            height: "100px", // Ensure it maintains a square shape
             borderRadius: "50%",
             objectFit: "cover",
-            marginBottom: "40px",
-            position: "relative",
+            transform: "translate(-50%, -60%)",  // Center the avatar in the container
+            zIndex: "2", // On top of the gif
           }}
-        />
-      )}
-
-      {/* Always show the "Tap to Talk" text */}
-      <div style={{
-        fontSize: "24px",
-        fontWeight: "bold",
-        fontFamily: "'Poppins', sans-serif",
-        color: "white",
-        marginBottom: "10px",
-        textAlign: "center",
-      }}>
-        Tap to talk:
-      </div>
-
-      {/* Conditionally show the button or call details */}
-      <Button
-        label={connected ? "End Call" : "Start Call"}
-        onClick={connected ? endCall : startCallInline}
-        isLoading={connecting}
-        isPressed={isPressed}
       />
+    )}
+  </div>
 
-        <div style={{ height: "60px", width: "100%" }}>
-        <ActiveCallDetail
-         assistantIsSpeaking={assistantIsSpeaking}
-         volumeLevel={volumeLevel}
-         connected={connected}
-        />
-        </div>
-      
+  {/* Always show the "Tap to Talk" text */}
+  <div style={{
+    fontSize: "24px",
+    fontWeight: "bold",
+    fontFamily: "'Poppins', sans-serif",
+    color: "white",
+    marginTop: "10px",
+    textAlign: "center",
+  }}>
+    Tap to talk:
+  </div>
 
-      {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
-      <ReturnToDocsLink />
-    </div>
+  {/* Call button */}
+  <Button
+    label={connected ? "End Call" : "Start Call"}
+    onClick={connected ? endCall : startCallInline}
+    isLoading={connecting}
+    isPressed={isPressed}
+  />
+
+  {/* Reserved space for ActiveCallDetail */}
+  <div style={{ height: "60px", width: "100%" }}>
+    <ActiveCallDetail
+      assistantIsSpeaking={assistantIsSpeaking}
+      volumeLevel={volumeLevel}
+      connected={connected}
+    />
+  </div>
+
+  {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
+  <ReturnToDocsLink />
+</div>
     </div>
   );
 };
