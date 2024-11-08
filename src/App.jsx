@@ -3,6 +3,8 @@ import ActiveCallDetail from "./components/ActiveCallDetail";
 import Button from "./components/base/Button";
 import Vapi from "@vapi-ai/web";
 import { isPublicKeyMissingError } from "./utils";
+import LottiePlayer from "./components/base/LottiePlayer";
+
 
 // Put your Vapi Public Key below.
 const vapi = new Vapi("1d2b5be0-8598-4d46-b95f-e738be2a8742");
@@ -19,6 +21,7 @@ const App = () => {
   const [assistantId, setAssistantId] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [isPressed, setIsPressed] = useState(false);  // New state for button press
+  const [animationUrl, setAnimationUrl] = useState("");
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   const sendPhaseIdPrompt = useCallback(() => {
@@ -50,10 +53,13 @@ const App = () => {
     const assistantFromUrl = urlParams.get('assistant_id');
     const phaseFromUrl = urlParams.get('phase_id');
     const imgFromUrl = urlParams.get('img_url');
+    const animationFromUrl = urlParams.get('animation_url');
+
 
     if (idFromUrl) setUserId(idFromUrl);
     if (nameFromUrl) setUserName(decodeURIComponent(nameFromUrl));
     if (projectFromUrl) setProjectId(decodeURIComponent(projectFromUrl));
+    if (animationFromUrl) setAnimationUrl(decodeURIComponent(animationFromUrl));
     if (assistantFromUrl) setAssistantId(assistantFromUrl);
     if (phaseFromUrl) {
       setPhaseId(phaseFromUrl);
@@ -165,22 +171,21 @@ const App = () => {
     height: "300px",
     marginBottom: "20px",
   }}>
-    {/* Animated GIF behind the avatar */}
-    <img
-      src="https://ufnmrdffbnmwfyisnkfu.supabase.co/storage/v1/object/public/photo/files/Brayn/Flow%201@1x-50fps.gif"
-      alt="Animated Background"
-      style={{
-        position: "absolute",
-        top: "0",
-        left: "0",
-        //width: "100%",
-        //height: "100%",
-        width: "300px",
-        height: "300px",
-        objectFit: "cover", // Ensure the gif covers the container
-        zIndex: "1", // Behind the avatar
-      }}
-    />
+  {/* Lottie animation behind the avatar */}
+    {animationUrl && (
+      <LottiePlayer
+        url={animationUrl}
+        style={{
+          position: "absolute",
+          top: "0",
+          left: "0",
+          width: "300px",
+          height: "300px",
+          objectFit: "cover",
+          zIndex: "1",
+        }}
+      />
+    )}
 
     {/* Avatar image on top */}
     {imgUrl && (
@@ -189,11 +194,11 @@ const App = () => {
         alt="User Avatar"
         style={{
             position: "absolute",
-            top: "50%",
+            top: "55%",
             left: "50%",
-            width: "150px",  // Adjust the avatar size here
+            width: "150x",  // Adjust the avatar size here
             height: "150px", // Ensure it maintains a square shape
-            borderRadius: "50%",
+            borderRadius: "30%",
             objectFit: "cover",
             transform: "translate(-50%, -60%)",  // Center the avatar in the container
             zIndex: "2", // On top of the gif
