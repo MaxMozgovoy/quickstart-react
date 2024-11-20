@@ -18,6 +18,7 @@ const App = () => {
   const [userName, setUserName] = useState("");
   const [projectId, setProjectId] = useState("");
   const [phaseId, setPhaseId] = useState("");
+  const [context, setContext] = useState("");
   const [assistantId, setAssistantId] = useState("");
   const [imgUrl, setImgUrl] = useState("");
   const [isPressed, setIsPressed] = useState(false);  // New state for button press
@@ -44,6 +45,26 @@ const App = () => {
     }
   }, [phaseId]);
 
+  const sendContext = useCallback(() => {
+    if (context) {
+      console.log(`Sending context: ${context}`);
+      try {
+        vapi.send({
+          type: 'add-message',
+          message: {
+            role: 'system',
+            content: `Current user context is: ${context}. Refer to this user context ${context} in your questions.`,
+          },
+        });
+        console.log('Context sent successfully');
+      } catch (error) {
+        console.error('Error sending context prompt:', error);
+      }
+    } else {
+      console.warn('Context is not set, skipping prompt');
+    }
+  }, [context]);
+
   useEffect(() => {
     // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -52,6 +73,7 @@ const App = () => {
     const projectFromUrl = urlParams.get('project');
     const assistantFromUrl = urlParams.get('assistant_id');
     const phaseFromUrl = urlParams.get('phase_id');
+    const contextFromUrl = urlParams.get('context');
     const imgFromUrl = urlParams.get('img_url');
     const animationFromUrl = urlParams.get('animation_url');
 
@@ -61,6 +83,10 @@ const App = () => {
     if (projectFromUrl) setProjectId(decodeURIComponent(projectFromUrl));
     if (animationFromUrl) setAnimationUrl(decodeURIComponent(animationFromUrl));
     if (assistantFromUrl) setAssistantId(assistantFromUrl);
+    if (contextFromUrl) {
+      setContext(contextFromUrl);
+      console.log(`Context set from URL: ${contextFromUrl}`);
+    }
     if (phaseFromUrl) {
       setPhaseId(phaseFromUrl);
       console.log(`Phase ID set from URL: ${phaseFromUrl}`);
@@ -78,6 +104,9 @@ const App = () => {
       setTimeout(() => {
         sendPhaseIdPrompt();
       }, 1000); // Delay the sendPhaseIdPrompt call by 1 second
+      setTimeout(() => {
+        sendContext();
+      }, 500); 
     });
 
     vapi.on("call-end", () => {
@@ -127,6 +156,7 @@ const App = () => {
         user_name: userName,
         project_id: projectId,
         phase_id: phaseId,
+        context: context,
       },
     };
 
@@ -286,7 +316,7 @@ const PleaseSetYourPublicKeyMessage = () => {
 const ReturnToDocsLink = () => {
   return (
     <a
-      href="https://callr.ai"
+      href="https://www.voxdiscover.com"
       target="_blank"
       rel="noopener noreferrer"
       style={{
