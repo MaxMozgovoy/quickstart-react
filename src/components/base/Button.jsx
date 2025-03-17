@@ -22,6 +22,7 @@ const Button = ({ onClick, isLoading, isPressed, label }) => {
           border: "none",
           cursor: "pointer",
           outline: "none",
+          zIndex: "2",
         }}
         disabled={isLoading}
         aria-label={label}
