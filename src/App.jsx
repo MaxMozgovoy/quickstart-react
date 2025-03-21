@@ -184,40 +184,32 @@ const App = () => {
         alignItems: "center",
         width: "100vw",
         height: "100vh",
-        background: "rgba(0, 0, 0, 0.8)", // Fallback semi-transparent background (if video fails or not provided)
-        position: 'relative', // Make container relative for absolute positioning of video
-        overflow: 'hidden' // Prevent scrollbars
+        background: "rgba(0, 0, 0, 0.8)", // Semi-transparent background
     }}>
-      {videoUrl && <VideoBackground videoUrl={videoUrl} />} {/* Render VideoBackground as direct child */}
-      <div style={{ // Responsive app container style - now on top of fullscreen video
+      <div style={{ // Your existing app container style - ensure it's on top of video
           display: "flex",
           flexDirection: "column",
-          maxWidth: "100vw", // Ensure it doesn't exceed viewport width
-          width: "50vw",     // Take 50% of viewport width (adjust as needed)
-          maxHeight: "100vh", // Ensure it doesn't exceed viewport height
+          width: "300px",
+          height: "600px",
           justifyContent: "space-between",
           alignItems: "center",
           padding: "15px",
           boxSizing: "border-box",
           overflow: "hidden",
-          position: "relative", // Keep position relative for inner elements
-          background: 'transparent', // Make app container background transparent to see video behind
-          borderRadius: "10px",
-          boxShadow: "0 0 0 rgba(255, 255, 255, 0)", // Remove or make boxShadow transparent if needed
-          zIndex: 1, // Ensure app container is on top of video
-          // No aspect ratio or height styles here, it will be sized by content and viewport constraints
+          position: "relative", // Keep position relative for inner elements if needed - important!
+          background: "#000", // Black background for the app container
+          borderRadius: "10px", // Rounded corners
+          boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effect
+          zIndex: "1",
         }}>
-
+        {videoUrl && <VideoBackground videoUrl={videoUrl} />} {/* Render VideoBackground as first child */}
 
         {/* Container for GIF and avatar */}
         <div style={{
           position: "relative",
-          width: "100%", // Take full width of the responsive container
-          height: "auto", // Adjust height automatically
+          width: "300px",
+          height: "300px",
           marginBottom: "20px",
-          maxWidth: '300px', // Limit max width to original avatar container size if needed
-          maxHeight: '300px', // Limit max height to original avatar container size if needed, or use aspect-ratio here too
-          aspectRatio: '1 / 1', // Maintain square aspect ratio for avatar container
         }}>
         {/* Lottie animation behind the avatar */}
           {animationUrl && (
@@ -227,10 +219,10 @@ const App = () => {
                 position: "absolute",
                 top: "0",
                 left: "0",
-                width: "100%",
-                height: "100%",
+                width: "300px",
+                height: "300px",
                 objectFit: "cover",
-                zIndex: "1",
+                zIndex: "2",
               }}
             />
           )}
@@ -244,13 +236,11 @@ const App = () => {
                   position: "absolute",
                   top: "55%",
                   left: "50%",
-                  width: "70%",  // Adjust avatar size as percentage of container
-                  height: "auto", // Maintain aspect ratio
-                  maxWidth: '150px', // Limit max width of avatar
-                  maxHeight: '150px', // Limit max height of avatar
+                  width: "150x",  // Adjust the avatar size here
+                  height: "150px", // Ensure it maintains a square shape
                   borderRadius: "30%",
                   objectFit: "cover",
-                  transform: "translate(-50%, -60%)",
+                  transform: "translate(-50%, -60%)",  // Center the avatar in the container
                   zIndex: "2", // On top of the gif
                 }}
             />
@@ -259,14 +249,13 @@ const App = () => {
 
         {/* Always show the "Tap to Talk" text */}
         <div style={{
-          fontSize: "calc(16px + 1vw)", // Responsive font size
+          fontSize: "24px",
           fontWeight: "bold",
           fontFamily: "'Poppins', sans-serif",
           color: "white",
           marginTop: "10px",
-          marginBottom: "30px",
           textAlign: "center",
-          zIndex: "2",
+          zIndex: "1",
         }}>
           Tap to talk:
         </div>
@@ -280,7 +269,7 @@ const App = () => {
         />
 
         {/* Reserved space for ActiveCallDetail */}
-        <div style={{ height: "60px", width: "100%" }}>
+        <div style={{ height: "60px", width: "100%", zIndex: "1", }}>
           <ActiveCallDetail
             assistantIsSpeaking={assistantIsSpeaking}
             volumeLevel={volumeLevel}
@@ -295,7 +284,7 @@ const App = () => {
   );
 };
 
-// Define the usePublicKeyInvalid hook (no changes)
+// Define the usePublicKeyInvalid hook
 const usePublicKeyInvalid = () => {
   const [showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage] = useState(false);
 
@@ -314,7 +303,7 @@ const usePublicKeyInvalid = () => {
   };
 };
 
-// Define the PleaseSetYourPublicKeyMessage component (no changes)
+// Define the PleaseSetYourPublicKeyMessage component
 const PleaseSetYourPublicKeyMessage = () => {
   return (
     <div
@@ -334,7 +323,7 @@ const PleaseSetYourPublicKeyMessage = () => {
   );
 };
 
-// Define the ReturnToDocsLink component (no changes)
+// Define the ReturnToDocsLink component
 const ReturnToDocsLink = () => {
   return (
     <a

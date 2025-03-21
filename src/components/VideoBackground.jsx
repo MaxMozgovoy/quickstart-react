@@ -1,18 +1,17 @@
-// --- START OF FILE VideoBackground.js ---
 import React from 'react';
 
 const VideoBackground = ({ videoUrl }) => {
   return (
     <div
       style={{
-        position: 'fixed', // Changed to 'fixed' to cover the whole viewport
+        overflow: 'hidden',
+        zIndex: 0,
+        pointerEvents: 'none',
+        position: 'absolute',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        overflow: 'hidden',
-        zIndex: 0, // Behind other content
-        pointerEvents: 'none',
       }}
     >
       <video
@@ -28,7 +27,9 @@ const VideoBackground = ({ videoUrl }) => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          objectFit: 'cover', // Changed back to 'cover' to stretch and fill screen
+          objectFit: 'contain', // Changed to 'contain' to fit entire video
+          width: '100%',      // Ensure video takes full width of container
+          height: '100%',     // Ensure video takes full height of container
         }}
       />
     </div>
@@ -36,4 +37,3 @@ const VideoBackground = ({ videoUrl }) => {
 };
 
 export default VideoBackground;
-// --- END OF FILE VideoBackground.js ---

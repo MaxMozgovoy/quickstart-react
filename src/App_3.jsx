@@ -1,11 +1,10 @@
-// --- START OF FILE App.js ---
 import { useEffect, useState, useCallback } from "react";
 import ActiveCallDetail from "./components/ActiveCallDetail";
 import Button from "./components/base/Button";
 import Vapi from "@vapi-ai/web";
 import { isPublicKeyMissingError } from "./utils";
 import LottiePlayer from "./components/base/LottiePlayer";
-import VideoBackground from "./components/VideoBackground"; // Import the new component
+
 
 // Put your Vapi Public Key below.
 const vapi = new Vapi("1d2b5be0-8598-4d46-b95f-e738be2a8742");
@@ -22,9 +21,8 @@ const App = () => {
   const [context, setContext] = useState("");
   const [assistantId, setAssistantId] = useState("");
   const [imgUrl, setImgUrl] = useState("");
-  const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);  // New state for button press
   const [animationUrl, setAnimationUrl] = useState("");
-  const [videoUrl, setVideoUrl] = useState(""); // New state for video URL
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   const sendPhaseIdPrompt = useCallback(() => {
@@ -67,11 +65,9 @@ const App = () => {
     }
   }, [context]);
 
-
   useEffect(() => {
-    // Parse URL parameters (same as before)
+    // Parse URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    // ... (parsing logic for all URL parameters including video)
     const idFromUrl = urlParams.get('id');
     const nameFromUrl = urlParams.get('name');
     const projectFromUrl = urlParams.get('project');
@@ -80,7 +76,6 @@ const App = () => {
     const contextFromUrl = urlParams.get('context');
     const imgFromUrl = urlParams.get('img_url');
     const animationFromUrl = urlParams.get('animation_url');
-    const videoFromUrl = urlParams.get('video'); // Get video URL
 
 
     if (idFromUrl) setUserId(idFromUrl);
@@ -97,10 +92,8 @@ const App = () => {
       console.log(`Phase ID set from URL: ${phaseFromUrl}`);
     }
     if (imgFromUrl) setImgUrl(decodeURIComponent(imgFromUrl));
-    if (videoFromUrl) setVideoUrl(decodeURIComponent(videoFromUrl)); // Set video URL
 
-
-    // Vapi event listeners (same as before)
+    // Vapi event listeners
     vapi.on("call-start", () => {
       console.log('Call started');
       setConnecting(false);
@@ -113,7 +106,7 @@ const App = () => {
       }, 1000); // Delay the sendPhaseIdPrompt call by 1 second
       setTimeout(() => {
         sendContext();
-      }, 500);
+      }, 500); 
     });
 
     vapi.on("call-end", () => {
@@ -147,7 +140,7 @@ const App = () => {
     vapi.on("message", (message) => {
       console.log("Received message:", message);
     });
-  }, [sendPhaseIdPrompt, sendContext]);
+  }, [sendPhaseIdPrompt]);
 
   const startCallInline = () => {
     if (!userId || !userName || !projectId || !assistantId) {
@@ -176,7 +169,6 @@ const App = () => {
     vapi.stop();
   };
 
-
   return (
     <div style={{
         display: "flex",
@@ -186,100 +178,97 @@ const App = () => {
         height: "100vh",
         background: "rgba(0, 0, 0, 0.8)", // Semi-transparent background
     }}>
-      <div style={{ // Your existing app container style - ensure it's on top of video
-          display: "flex",
-          flexDirection: "column",
-          width: "300px",
-          height: "600px",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "15px",
-          boxSizing: "border-box",
-          overflow: "hidden",
-          position: "relative", // Keep position relative for inner elements if needed - important!
-          background: "#000", // Black background for the app container
-          borderRadius: "10px", // Rounded corners
-          boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effect
-          zIndex: "1",
-        }}>
-        {videoUrl && <VideoBackground videoUrl={videoUrl} />} {/* Render VideoBackground as first child */}
+    <div style={{
+  display: "flex",
+  flexDirection: "column",
+  width: "300px",
+  height: "600px",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "15px",
+  boxSizing: "border-box",
+  overflow: "hidden",
+  position: "relative",
+  background: "#000", // Black background for the app container
+  borderRadius: "10px", // Rounded corners
+  boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effect
+}}>
 
-        {/* Container for GIF and avatar */}
-        <div style={{
-          position: "relative",
+  {/* Container for GIF and avatar */}
+  <div style={{
+    position: "relative",
+    width: "300px",
+    height: "300px",
+    marginBottom: "20px",
+  }}>
+  {/* Lottie animation behind the avatar */}
+    {animationUrl && (
+      <LottiePlayer
+        url={animationUrl}
+        style={{
+          position: "absolute",
+          top: "0",
+          left: "0",
           width: "300px",
           height: "300px",
-          marginBottom: "20px",
-        }}>
-        {/* Lottie animation behind the avatar */}
-          {animationUrl && (
-            <LottiePlayer
-              url={animationUrl}
-              style={{
-                position: "absolute",
-                top: "0",
-                left: "0",
-                width: "300px",
-                height: "300px",
-                objectFit: "cover",
-                zIndex: "2",
-              }}
-            />
-          )}
-
-          {/* Avatar image on top */}
-          {imgUrl && (
-            <img
-              src={imgUrl}
-              alt="User Avatar"
-              style={{
-                  position: "absolute",
-                  top: "55%",
-                  left: "50%",
-                  width: "150x",  // Adjust the avatar size here
-                  height: "150px", // Ensure it maintains a square shape
-                  borderRadius: "30%",
-                  objectFit: "cover",
-                  transform: "translate(-50%, -60%)",  // Center the avatar in the container
-                  zIndex: "2", // On top of the gif
-                }}
-            />
-          )}
-        </div>
-
-        {/* Always show the "Tap to Talk" text */}
-        <div style={{
-          fontSize: "24px",
-          fontWeight: "bold",
-          fontFamily: "'Poppins', sans-serif",
-          color: "white",
-          marginTop: "10px",
-          textAlign: "center",
+          objectFit: "cover",
           zIndex: "1",
-        }}>
-          Tap to talk:
-        </div>
+        }}
+      />
+    )}
 
-        {/* Call button */}
-        <Button
-          label={connected ? "End Call" : "Start Call"}
-          onClick={connected ? endCall : startCallInline}
-          isLoading={connecting}
-          isPressed={isPressed}
-        />
+    {/* Avatar image on top */}
+    {imgUrl && (
+      <img
+        src={imgUrl}
+        alt="User Avatar"
+        style={{
+            position: "absolute",
+            top: "55%",
+            left: "50%",
+            width: "150x",  // Adjust the avatar size here
+            height: "150px", // Ensure it maintains a square shape
+            borderRadius: "30%",
+            objectFit: "cover",
+            transform: "translate(-50%, -60%)",  // Center the avatar in the container
+            zIndex: "2", // On top of the gif
+          }}
+      />
+    )}
+  </div>
 
-        {/* Reserved space for ActiveCallDetail */}
-        <div style={{ height: "60px", width: "100%", zIndex: "1", }}>
-          <ActiveCallDetail
-            assistantIsSpeaking={assistantIsSpeaking}
-            volumeLevel={volumeLevel}
-            connected={connected}
-          />
-        </div>
+  {/* Always show the "Tap to Talk" text */}
+  <div style={{
+    fontSize: "24px",
+    fontWeight: "bold",
+    fontFamily: "'Poppins', sans-serif",
+    color: "white",
+    marginTop: "10px",
+    textAlign: "center",
+  }}>
+    Tap to talk:
+  </div>
 
-        {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
-        <ReturnToDocsLink />
-      </div>
+  {/* Call button */}
+  <Button
+    label={connected ? "End Call" : "Start Call"}
+    onClick={connected ? endCall : startCallInline}
+    isLoading={connecting}
+    isPressed={isPressed}
+  />
+
+  {/* Reserved space for ActiveCallDetail */}
+  <div style={{ height: "60px", width: "100%" }}>
+    <ActiveCallDetail
+      assistantIsSpeaking={assistantIsSpeaking}
+      volumeLevel={volumeLevel}
+      connected={connected}
+    />
+  </div>
+
+  {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
+  <ReturnToDocsLink />
+</div>
     </div>
   );
 };
@@ -342,11 +331,9 @@ const ReturnToDocsLink = () => {
         boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
       }}
     >
-
+    
     </a>
   );
 };
 
-
 export default App;
-// --- END OF FILE App.js ---
