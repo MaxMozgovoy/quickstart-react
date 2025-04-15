@@ -8,7 +8,7 @@ import LottiePlayer from "./components/base/LottiePlayer";
 import VideoBackground from "./components/VideoBackground"; // Import the new component
 
 // Put your Vapi Public Key below.
-const vapi = new Vapi("1d2b5be0-8598-4d46-b95f-e738be2a8742");
+const vapi = new Vapi("cff4fb76-054f-401d-bd84-07684185ea36");
 
 const App = () => {
   const [connecting, setConnecting] = useState(false);
