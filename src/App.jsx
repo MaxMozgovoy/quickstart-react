@@ -28,6 +28,7 @@ const App = () => {
   const [buttonUrl, setButtonUrl] = useState(""); // New state for button image URL
   const [bkColor, setBkColor] = useState("#000"); // New state for background color
   const [tapText, setTapText] = useState("Tap to talk:"); // New state for tap text
+  const [tapTextColor, setTapTextColor] = useState("white"); // New state for tap text color
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   const sendPhaseIdPrompt = useCallback(() => {
@@ -87,6 +88,7 @@ const App = () => {
     const buttonFromUrl = urlParams.get('button_url'); // Get button image URL
     const bkColorFromUrl = urlParams.get('bk_color'); // Get background color
     const tapTextFromUrl = urlParams.get('tap_text'); // Get tap text
+    const tapTextColorFromUrl = urlParams.get('tap_text_color'); // Get tap text color
 
 
     if (idFromUrl) setUserId(idFromUrl);
@@ -107,6 +109,7 @@ const App = () => {
     if (buttonFromUrl) setButtonUrl(decodeURIComponent(buttonFromUrl)); // Set button image URL
     if (bkColorFromUrl) setBkColor(decodeURIComponent(bkColorFromUrl)); // Set background color
     if (tapTextFromUrl) setTapText(decodeURIComponent(tapTextFromUrl)); // Set tap text
+    if (tapTextColorFromUrl) setTapTextColor(decodeURIComponent(tapTextColorFromUrl)); // Set tap text color
 
 
     // Vapi event listeners (same as before)
@@ -261,7 +264,7 @@ const App = () => {
           fontSize: "24px",
           fontWeight: "bold",
           fontFamily: "'Poppins', sans-serif",
-          color: "white",
+          color: tapTextColor, // Use the custom text color
           marginTop: "10px",
           textAlign: "center",
           zIndex: "1",
