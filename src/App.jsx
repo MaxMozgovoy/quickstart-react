@@ -25,6 +25,9 @@ const App = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [animationUrl, setAnimationUrl] = useState("");
   const [videoUrl, setVideoUrl] = useState(""); // New state for video URL
+  const [buttonUrl, setButtonUrl] = useState(""); // New state for button image URL
+  const [bkColor, setBkColor] = useState("#000"); // New state for background color
+  const [tapText, setTapText] = useState("Tap to talk:"); // New state for tap text
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   const sendPhaseIdPrompt = useCallback(() => {
@@ -81,6 +84,9 @@ const App = () => {
     const imgFromUrl = urlParams.get('img_url');
     const animationFromUrl = urlParams.get('animation_url');
     const videoFromUrl = urlParams.get('video'); // Get video URL
+    const buttonFromUrl = urlParams.get('button_url'); // Get button image URL
+    const bkColorFromUrl = urlParams.get('bk_color'); // Get background color
+    const tapTextFromUrl = urlParams.get('tap_text'); // Get tap text
 
 
     if (idFromUrl) setUserId(idFromUrl);
@@ -98,6 +104,9 @@ const App = () => {
     }
     if (imgFromUrl) setImgUrl(decodeURIComponent(imgFromUrl));
     if (videoFromUrl) setVideoUrl(decodeURIComponent(videoFromUrl)); // Set video URL
+    if (buttonFromUrl) setButtonUrl(decodeURIComponent(buttonFromUrl)); // Set button image URL
+    if (bkColorFromUrl) setBkColor(decodeURIComponent(bkColorFromUrl)); // Set background color
+    if (tapTextFromUrl) setTapText(decodeURIComponent(tapTextFromUrl)); // Set tap text
 
 
     // Vapi event listeners (same as before)
@@ -197,7 +206,7 @@ const App = () => {
           boxSizing: "border-box",
           overflow: "hidden",
           position: "relative", // Keep position relative for inner elements if needed - important!
-          background: "#000", // Black background for the app container
+          background: bkColor, // Use the custom background color
           borderRadius: "10px", // Rounded corners
           boxShadow: "0 0 20px rgba(255, 255, 255, 0.1)", // Subtle glow effect
           zIndex: "1",
@@ -257,7 +266,7 @@ const App = () => {
           textAlign: "center",
           zIndex: "1",
         }}>
-          Tap to talk:
+          {tapText}
         </div>
 
         {/* Call button */}
@@ -266,6 +275,7 @@ const App = () => {
           onClick={connected ? endCall : startCallInline}
           isLoading={connecting}
           isPressed={isPressed}
+          buttonUrl={buttonUrl} // Pass the custom button URL
         />
 
         {/* Reserved space for ActiveCallDetail */}
