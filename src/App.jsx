@@ -291,7 +291,7 @@ const App = () => {
         </div>
 
         {showPublicKeyInvalidMessage ? <PleaseSetYourPublicKeyMessage /> : null}
-        <ReturnToDocsLink />
+        {/* <ReturnToDocsLink /> */}
       </div>
     </div>
   );

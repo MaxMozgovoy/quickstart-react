@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embedded Content Example</title>
+    <style>
+        /* Basic styling for the body to center content */
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff; /* Changed to white background */
+            margin: 0; /* Remove default body margin */
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Styling for the iframe container */
+        .iframe-container {
+            /* Removed max-width to allow iframe to be fixed size */
+            width: 300px; /* Set container width to match iframe width */
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            border-radius: 12px; /* Rounded corners for the container */
+            overflow: hidden; /* Hide anything outside the rounded corners */
+            background-color: #fff; /* White background for the container */
+            /* Added margin auto for horizontal centering if container is smaller than page */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Styling for the iframe itself */
+        iframe {
+            width: 300px; /* Set iframe width to 300px */
+            height: 600px; /* Set iframe height to 600px */
+            border: none; /* Remove the default iframe border */
+            display: block; /* Remove extra space below the iframe */
+        }
+
+        /* Responsive adjustments - Keeping some for general layout but iframe is fixed */
+        @media (max-width: 768px) {
+             /* Container width is now fixed, no longer needs max-width adjustment */
+             /* iframe size is fixed, no longer needs height adjustment */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Embedding Example</h1>
+
+    <p>Below is the embedded content from the specified URL:</p>
+
+    <div class="iframe-container">
+        <iframe
+            src="https://callr-cyan.vercel.app/?id=17b8ec9b-9a82-49a7-1111-111111111111&name=John%20Doe&project=1&assistant_id=6e8c5ab7-6b12-4c28-b152-c2deee19137d&img_url=https://ufnmrdffbnmwfyisnkfu.supabase.co/storage/v1/object/public/photo/files/kiseki/Kiseki.png&animation_url=https://ufnmrdffbnmwfyisnkfu.supabase.co/storage/v1/object/public/photo/files/kiseki/pink.json&button_url=https://ufnmrdffbnmwfyisnkfu.supabase.co/storage/v1/object/public/photo/files/Brayn/echo_mic-3.png&bk_color=white&tap_text=%E3%82%AF%E3%83%AA%E3%83%83%E3%82%AF%E3%81%97%E3%81%A6%E4%BC%9A%E8%A9%B1&tap_text_color=black"
+            title="Embedded External Content" allow="microphone"
+            allowfullscreen> </iframe>
+    </div>
+
+    <p>This is the end of the page content.</p>
+
+</body>
+</html>
