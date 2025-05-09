@@ -261,7 +261,7 @@ const App = () => {
 
         {/* Always show the "Tap to Talk" text */}
         <div style={{
-          fontSize: "24px",
+          fontSize: "22px",
           fontWeight: "bold",
           fontFamily: "'Poppins', sans-serif",
           color: tapTextColor, // Use the custom text color
