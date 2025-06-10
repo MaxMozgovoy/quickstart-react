@@ -30,6 +30,7 @@ const App = () => {
   const [tapText, setTapText] = useState("Tap to talk:"); // New state for tap text
   const [tapTextColor, setTapTextColor] = useState("white"); // New state for tap text color
   const [mainText, setMainText] = useState(""); // New state for main text
+  const [introText, setIntroText] = useState(""); // New state for intro text
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   const sendPhaseIdPrompt = useCallback(() => {
@@ -91,6 +92,7 @@ const App = () => {
     const tapTextFromUrl = urlParams.get('tap_text'); // Get tap text
     const tapTextColorFromUrl = urlParams.get('tap_text_color'); // Get tap text color
     const mainTextFromUrl = urlParams.get('main_text'); // Get main text
+    const introTextFromUrl = urlParams.get('intro_text'); // Get intro text
 
 
     if (idFromUrl) setUserId(idFromUrl);
@@ -113,6 +115,7 @@ const App = () => {
     if (tapTextFromUrl) setTapText(decodeURIComponent(tapTextFromUrl)); // Set tap text
     if (tapTextColorFromUrl) setTapTextColor(decodeURIComponent(tapTextColorFromUrl)); // Set tap text color
     if (mainTextFromUrl) setMainText(decodeURIComponent(mainTextFromUrl)); // Set main text
+    if (introTextFromUrl) setIntroText(decodeURIComponent(introTextFromUrl)); // Set intro text
 
 
     // Vapi event listeners (same as before)
@@ -278,7 +281,7 @@ const App = () => {
           </div>
         )}
 
-        {/* Always show the "Tap to Talk" text */}
+        {/* Show intro text when pressed/connecting, otherwise show tap text */}
         <div style={{
           fontSize: "24px",
           fontWeight: "normal",
@@ -289,7 +292,7 @@ const App = () => {
           textAlign: "center",
           zIndex: "1",
         }}>
-          {tapText}
+          {(isPressed || connecting) && introText ? introText : tapText}
         </div>
 
         {/* Call button */}
