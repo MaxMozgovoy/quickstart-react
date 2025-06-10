@@ -29,6 +29,7 @@ const App = () => {
   const [bkColor, setBkColor] = useState("#000"); // New state for background color
   const [tapText, setTapText] = useState("Tap to talk:"); // New state for tap text
   const [tapTextColor, setTapTextColor] = useState("white"); // New state for tap text color
+  const [mainText, setMainText] = useState(""); // New state for main text
   const { showPublicKeyInvalidMessage, setShowPublicKeyInvalidMessage } = usePublicKeyInvalid();
 
   const sendPhaseIdPrompt = useCallback(() => {
@@ -89,6 +90,7 @@ const App = () => {
     const bkColorFromUrl = urlParams.get('bk_color'); // Get background color
     const tapTextFromUrl = urlParams.get('tap_text'); // Get tap text
     const tapTextColorFromUrl = urlParams.get('tap_text_color'); // Get tap text color
+    const mainTextFromUrl = urlParams.get('main_text'); // Get main text
 
 
     if (idFromUrl) setUserId(idFromUrl);
@@ -110,6 +112,7 @@ const App = () => {
     if (bkColorFromUrl) setBkColor(decodeURIComponent(bkColorFromUrl)); // Set background color
     if (tapTextFromUrl) setTapText(decodeURIComponent(tapTextFromUrl)); // Set tap text
     if (tapTextColorFromUrl) setTapTextColor(decodeURIComponent(tapTextColorFromUrl)); // Set tap text color
+    if (mainTextFromUrl) setMainText(decodeURIComponent(mainTextFromUrl)); // Set main text
 
 
     // Vapi event listeners (same as before)
@@ -202,7 +205,7 @@ const App = () => {
           display: "flex",
           flexDirection: "column",
           width: "300px",
-          height: "600px",
+          height: "700px",
           justifyContent: "space-between",
           alignItems: "center",
           padding: "15px",
@@ -221,7 +224,7 @@ const App = () => {
           position: "relative",
           width: "300px",
           height: "300px",
-          marginBottom: "20px",
+          marginBottom: "10px",
         }}>
         {/* Lottie animation behind the avatar */}
           {animationUrl && (
@@ -259,13 +262,30 @@ const App = () => {
           )}
         </div>
 
+        {/* Main text above tap text */}
+        {mainText && (
+          <div style={{
+            fontSize: "15px",
+            fontWeight: "normal",
+            fontFamily: "'Noto Sans', sans-serif",
+            color: tapTextColor, // Use the same color as tap text
+            marginTop: "1px",
+            marginBottom: "10px", // Reduce margin if main text exists
+            textAlign: "center",
+            zIndex: "1",
+          }}>
+            {mainText}
+          </div>
+        )}
+
         {/* Always show the "Tap to Talk" text */}
         <div style={{
-          fontSize: "22px",
-          fontWeight: "bold",
-          fontFamily: "'Poppins', sans-serif",
+          fontSize: "24px",
+          fontWeight: "normal",
+          fontFamily: "'Noto Sans', sans-serif",
           color: tapTextColor, // Use the custom text color
-          marginTop: "10px",
+          marginTop: mainText ? "5px" : "10px", // Reduce margin if main text exists
+          marginBottom: mainText ? "20px" : "20px", // Reduce margin if main text exists
           textAlign: "center",
           zIndex: "1",
         }}>
