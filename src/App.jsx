@@ -265,17 +265,22 @@ const App = () => {
           )}
         </div>
 
-        {/* Main text above tap text */}
+        {/* Main text above tap text, now with fixed vertical position */}
         {mainText && (
           <div style={{
+            position: "absolute", // Set position to absolute
+            top: "280px",      // Fixed 250px from the top of the parent container
+            left: "50%",      // Center horizontally
+            transform: "translateX(-50%)", // Adjust for true horizontal centering
             fontSize: "15px",
             fontWeight: "normal",
             fontFamily: "'Noto Sans', sans-serif",
-            color: tapTextColor, // Use the same color as tap text
-            marginTop: "1px",
-            marginBottom: "10px", // Reduce margin if main text exists
+            color: tapTextColor,
             textAlign: "center",
+            marginBottom: "24px",
             zIndex: "1",
+            width: "calc(100% - 30px)", // Account for parent's padding
+            maxWidth: "270px" // Ensure it doesn't overflow the container
           }}>
             {mainText}
           </div>
@@ -287,8 +292,8 @@ const App = () => {
           fontWeight: "normal",
           fontFamily: "'Noto Sans', sans-serif",
           color: tapTextColor, // Use the custom text color
-          marginTop: mainText ? "5px" : "10px", // Reduce margin if main text exists
-          marginBottom: mainText ? "20px" : "20px", // Reduce margin if main text exists
+          marginTop: mainText ? "24px" : "24px", // Reduce margin if main text exists
+          marginBottom: mainText ? "5px" : "0px", // Reduce margin if main text exists
           textAlign: "center",
           zIndex: "1",
         }}>
