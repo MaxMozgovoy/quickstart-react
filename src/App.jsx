@@ -202,7 +202,7 @@ const App = () => {
         alignItems: "center",
         width: "100vw",
         height: "100vh",
-        background: "rgba(0, 0, 0, 0.8)", // Semi-transparent background
+        background: "rgb(255, 255, 255)", // Semi-transparent background
     }}>
       <div style={{ // Your existing app container style - ensure it's on top of video
           display: "flex",
@@ -349,7 +349,7 @@ const PleaseSetYourPublicKeyMessage = () => {
         left: "25px",
         padding: "10px",
         color: "#fff",
-        backgroundColor: "#f03e3e",
+        backgroundColor: "#ffffff",
         borderRadius: "5px",
         boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
       }}
